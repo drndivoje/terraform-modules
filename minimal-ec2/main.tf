@@ -38,16 +38,22 @@ data "aws_ami" "amazon" {
 
 data "aws_availability_zones" "available" {}
 
-data "aws_subnet" "first" {
-  availability_zone = data.aws_availability_zones.available.names[0]
-  vpc_id            = var.vpc_id
+data "aws_vpc" "default" {
+  default = true
 }
 
 locals {
   ami_id    = data.aws_ami.amazon.id
   subnet_id = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
-
+  vpc_id    = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
 }
+
+data "aws_subnet" "first" {
+  availability_zone = data.aws_availability_zones.available.names[0]
+  vpc_id            = local.vpc_id
+}
+
+
 
 # IAM Role for EC2 to access S3
 resource "aws_iam_role" "s3_access_role" {
