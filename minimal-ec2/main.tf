@@ -12,7 +12,7 @@ data "aws_ami" "amazon" {
   most_recent = true
   owners      = ["amazon"]
 
-  # Amazon Linux 2 optimised ECS instance
+  # Amazon Linux 2 
   filter {
     name   = "name"
     values = ["al2023-ami-2023.6*"]
@@ -46,6 +46,7 @@ locals {
   ami_id    = data.aws_ami.amazon.id
   subnet_id = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
   vpc_id    = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
+  s3_bucket_provided = var.s3_bucket_arn != ""
 }
 
 data "aws_subnet" "first" {
@@ -56,8 +57,9 @@ data "aws_subnet" "first" {
 
 
 # IAM Role for EC2 to access S3
-resource "aws_iam_role" "s3_access_role" {
-  name = "s3-access-role"
+resource "aws_iam_role" "iam_ec2_role" {
+
+  name = "${var.instance_name}-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -75,6 +77,7 @@ resource "aws_iam_role" "s3_access_role" {
 
 # IAM Policy for S3 Bucket Access
 resource "aws_iam_policy" "s3_bucket_policy" {
+  count       = local.s3_bucket_provided ? 1 : 0
   name        = "s3-bucket-policy"
   description = "Policy to allow access to specific S3 bucket"
   policy = jsonencode({
@@ -99,14 +102,15 @@ resource "aws_iam_policy" "s3_bucket_policy" {
 
 # IAM Role Policy Attachment
 resource "aws_iam_role_policy_attachment" "s3_access_attachment" {
-  role       = aws_iam_role.s3_access_role.name
-  policy_arn = aws_iam_policy.s3_bucket_policy.arn
+  count       = local.s3_bucket_provided ? 1 : 0
+  role       = aws_iam_role.iam_ec2_role.name
+  policy_arn = aws_iam_policy.s3_bucket_policy[0].arn
 }
 
 # IAM Instance Profile
 resource "aws_iam_instance_profile" "ec2_instance_profile" {
-  name = "ec2-instance-profile"
-  role = aws_iam_role.s3_access_role.name
+  name = "${var.instance_name}-instance-profile"
+  role = aws_iam_role.iam_ec2_role.name
 }
 
 
