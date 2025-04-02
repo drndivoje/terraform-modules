@@ -51,6 +51,13 @@ variable "s3_bucket_arn" {
   default     = ""
 }
 
+variable "ami_id" {
+  description = "The AMI ID to use for the instance."
+  type        = string
+  default     = ""
+  
+}
+
 
 # Input: Tags
 variable "tags" {
