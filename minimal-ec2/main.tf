@@ -42,18 +42,18 @@ data "aws_vpc" "default" {
   default = true
 }
 
-locals {
-  ami_id    = var.ami_id != "" ? var.ami_id : data.aws_ami.amazon.id
-  subnet_id = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
-  vpc_id    = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
-  s3_bucket_provided = var.s3_bucket_arn != ""
-}
 
 data "aws_subnet" "first" {
   availability_zone = data.aws_availability_zones.available.names[0]
-  vpc_id            = local.vpc_id
+  vpc_id            = data.aws_vpc.default.id
 }
 
+locals {
+  ami_id             = var.ami_id != "" ? var.ami_id : data.aws_ami.amazon.id
+  subnet_id          = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
+  vpc_id             = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
+  s3_bucket_provided = var.s3_bucket_arn != ""
+}
 
 
 # IAM Role for EC2 to access S3
@@ -102,7 +102,7 @@ resource "aws_iam_policy" "s3_bucket_policy" {
 
 # IAM Role Policy Attachment
 resource "aws_iam_role_policy_attachment" "s3_access_attachment" {
-  count       = local.s3_bucket_provided ? 1 : 0
+  count      = local.s3_bucket_provided ? 1 : 0
   role       = aws_iam_role.iam_ec2_role.name
   policy_arn = aws_iam_policy.s3_bucket_policy[0].arn
 }
