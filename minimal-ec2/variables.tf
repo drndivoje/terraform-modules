@@ -29,7 +29,7 @@ variable "instance_name" {
 variable "instance_type" {
   description = "The EC2 instance type."
   type        = string
-  default     = "t2.micro"
+  default     = "t4g.nano"
 }
 
 # Input: Associate Public IP
@@ -44,18 +44,21 @@ variable "user_data" {
   type        = string
 }
 
+variable "operating_system" {
+  description = "The operating system for the EC2 instance. Possible values are 'ubuntu', 'amazon-linux', or 'centos'."
+  type        = string
+  default     = "ubuntu"
+  validation {
+    condition     = contains(["ubuntu", "amazon-linux", "centos"], var.operating_system)
+    error_message = "The operating system must be one of 'ubuntu', 'amazon-linux', or 'centos'."
+  }
+}
+
 
 variable "s3_bucket_arn" {
   description = "ARN of the S3 bucket"
   type        = string
   default     = ""
-}
-
-variable "ami_id" {
-  description = "The AMI ID to use for the instance."
-  type        = string
-  default     = ""
-  
 }
 
 

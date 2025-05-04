@@ -7,34 +7,7 @@ terraform {
     }
   }
 }
-# Search for ami id
-data "aws_ami" "amazon" {
-  most_recent = true
-  owners      = ["amazon"]
 
-  # Amazon Linux 2 
-  filter {
-    name   = "name"
-    values = ["al2023-ami-2023.6*"]
-  }
-
-  # correct arch
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  # Owned by Amazon
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
 
 data "aws_availability_zones" "available" {}
 
@@ -49,7 +22,7 @@ data "aws_subnet" "first" {
 }
 
 locals {
-  ami_id             = var.ami_id != "" ? var.ami_id : data.aws_ami.amazon.id
+  ami_id             = local.ami_ids[var.operating_system]
   subnet_id          = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
   vpc_id             = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
   s3_bucket_provided = var.s3_bucket_arn != ""
@@ -140,6 +113,13 @@ resource "aws_launch_template" "this" {
         Name = var.instance_name
       }
     )
+  }
+
+  instance_market_options {
+    market_type = "spot"
+    spot_options {
+      spot_instance_type = "one-time"
+    }
   }
 }
 
