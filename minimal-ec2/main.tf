@@ -114,11 +114,13 @@ resource "aws_launch_template" "this" {
       }
     )
   }
-
-  instance_market_options {
-    market_type = "spot"
-    spot_options {
-      spot_instance_type = "one-time"
+  dynamic "instance_market_options" {
+    for_each = var.spot_instance ? [1] : []
+    content {
+      market_type = "spot"
+      spot_options {
+        spot_instance_type = "one-time"
+      }
     }
   }
 }

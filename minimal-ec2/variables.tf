@@ -2,14 +2,14 @@
 variable "vpc_id" {
   description = "The ID of the VPC where the EC2 instance will be deployed."
   type        = string
-  default = ""
+  default     = ""
 }
 
 # Input: Subnet ID
 variable "subnet_id" {
   description = "The ID of the subnet where the EC2 instance will be deployed."
   type        = string
-  default = ""
+  default     = ""
 }
 
 # Input: Security Group ID
@@ -67,4 +67,10 @@ variable "tags" {
   description = "A map of tags to assign to the resources."
   type        = map(string)
   default     = {}
+}
+
+variable "spot_instance" {
+  description = "Whether to use a spot instance."
+  type        = bool
+  default     = true
 }

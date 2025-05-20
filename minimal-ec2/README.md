@@ -40,6 +40,7 @@ No modules.
 | <a name="input_operating_system"></a> [operating\_system](#input\_operating\_system) | The operating system for the EC2 instance. Possible values are 'ubuntu', 'amazon-linux', or 'centos'. | `string` | `"ubuntu"` | no |
 | <a name="input_s3_bucket_arn"></a> [s3\_bucket\_arn](#input\_s3\_bucket\_arn) | ARN of the S3 bucket | `string` | `""` | no |
 | <a name="input_security_group_id"></a> [security\_group\_id](#input\_security\_group\_id) | Security group ID to attach to the EC2 instance. | `string` | n/a | yes |
+| <a name="input_spot_instance"></a> [spot\_instance](#input\_spot\_instance) | Whether to use a spot instance. | `bool` | `true` | no |
 | <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id) | The ID of the subnet where the EC2 instance will be deployed. | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to the resources. | `map(string)` | `{}` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | User data script to run on the instance. | `string` | n/a | yes |
