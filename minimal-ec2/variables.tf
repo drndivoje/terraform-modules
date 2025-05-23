@@ -54,14 +54,6 @@ variable "operating_system" {
   }
 }
 
-
-variable "s3_bucket_arn" {
-  description = "ARN of the S3 bucket"
-  type        = string
-  default     = ""
-}
-
-
 # Input: Tags
 variable "tags" {
   description = "A map of tags to assign to the resources."

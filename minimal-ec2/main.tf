@@ -22,10 +22,9 @@ data "aws_subnet" "first" {
 }
 
 locals {
-  ami_id             = local.ami_ids[var.operating_system]
-  subnet_id          = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
-  vpc_id             = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
-  s3_bucket_provided = var.s3_bucket_arn != ""
+  ami_id    = local.ami_ids[var.operating_system]
+  subnet_id = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
+  vpc_id    = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
 }
 
 
@@ -48,45 +47,11 @@ resource "aws_iam_role" "iam_ec2_role" {
   })
 }
 
-# IAM Policy for S3 Bucket Access
-resource "aws_iam_policy" "s3_bucket_policy" {
-  count       = local.s3_bucket_provided ? 1 : 0
-  name        = "s3-bucket-policy"
-  description = "Policy to allow access to specific S3 bucket"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
-        ]
-        Resource = [
-          var.s3_bucket_arn,
-          "${var.s3_bucket_arn}/*"
-        ]
-      }
-    ]
-  })
-}
-
-# IAM Role Policy Attachment
-resource "aws_iam_role_policy_attachment" "s3_access_attachment" {
-  count      = local.s3_bucket_provided ? 1 : 0
-  role       = aws_iam_role.iam_ec2_role.name
-  policy_arn = aws_iam_policy.s3_bucket_policy[0].arn
-}
-
 # IAM Instance Profile
 resource "aws_iam_instance_profile" "ec2_instance_profile" {
   name = "${var.instance_name}-instance-profile"
   role = aws_iam_role.iam_ec2_role.name
 }
-
-
 
 # Resource: Launch Template for EC2
 resource "aws_launch_template" "this" {

@@ -11,6 +11,12 @@ output "instance_public_ip" {
 }
 
 output "ec2_instance_url" {
-    value = "http://${aws_instance.this.public_dns}"
-    description = "The URL of the EC2 instance"
+  value       = "http://${aws_instance.this.public_dns}"
+  description = "The URL of the EC2 instance"
+}
+
+output "iam_role" {
+  description = "IAM role attached to the EC2 instance."
+  value       = aws_iam_role.iam_ec2_role.name
+
 }
