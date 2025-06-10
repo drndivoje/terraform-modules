@@ -22,7 +22,7 @@ data "aws_subnet" "first" {
 }
 
 locals {
-  ami_id    = local.ami_ids[var.operating_system]
+  ami_id    = var.ami_id != "" ? var.ami_id : local.ami_ids[var.operating_system]
   subnet_id = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.first.id
   vpc_id    = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.default.id
 }

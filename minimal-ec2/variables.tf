@@ -66,3 +66,10 @@ variable "spot_instance" {
   type        = bool
   default     = true
 }
+
+variable "ami_id" {
+  description = "AMI ID to use for the EC2 instance. If not provided, it will be determined based on the operating system."
+  type        = string
+  default     = ""
+  
+}
